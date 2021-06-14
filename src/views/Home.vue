@@ -1,35 +1,66 @@
 <template>
-  <div class="home">
-    <div class="grid grid-cols-4 md:grid-cols-4 gap-6">
-      <div v-for="movie in movies" :key="movie.id" class="shadow">
-        <TheMovie :titleProp="movie.title" :posterProp="movie.poster"></TheMovie>
+  <div class="container px-4 mx-auto">
+    <div class="mt-4 mb-4">
+      <TheSearch v-model="search"></TheSearch>
+    </div>
+    <p v-if="error">Error de comunicaci&oacute;n</p>
+    <div v-else class="grid grid-cols-4 gap-6">
+      <div v-for="movie in movies" :key="movie.id" class="shadow mb-4">
+        <TheMovie
+          @click="viewDetail(movie.id)"
+          :titleProp="movie.title"
+          :posterProp="movie.poster"
+        ></TheMovie>
       </div>
+    </div>
+    <div class="mt-4 mb-4 text-center" v-if="showMore">
+      <button
+        type="button"
+        class="rounded bg-green-400 text-white text-center w-40 p-1"
+        @click="searchMore"
+      >
+        Mostrar m&aacute;s
+      </button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { onMounted, ref, watchEffect } from "vue";
 import TheMovie from "../components/TheMovie.vue";
-import { defineComponent } from "vue";
-import algoliasearch from "algoliasearch";
+import TheSearch from "../components/TheSearch.vue";
+import { defineComponent, onMounted, watch } from "vue";
+import { useHome } from "../composables/useHome";
 
 export default defineComponent({
   name: "Home",
   components: {
     TheMovie,
+    TheSearch,
   },
   setup() {
-    const message = ref("hola");
-    const movies = ref([] as any);
+    const {
+      movies,
+      viewDetail,
+      error,
+      search,
+      searchMovies,
+      showMore,
+      searchMore,
+    } = useHome();
 
-    watchEffect(async () => {
-      const client = algoliasearch("CSK3YQ9ZQO", "23ceb6d8075e0a3055ce545512ddfa1a");
-      const index = client.initIndex("movies");
-      const { hits }: { hits: Array<any> } = await index.search("");
-      movies.value = hits;
-    });
-    return { message, movies };
+    onMounted(() => searchMovies(""));
+
+    watch(search, searchMovies);
+
+    return {
+      movies,
+      viewDetail,
+      error,
+      search,
+      showMore,
+      searchMovies,
+      searchMore,
+    };
   },
 });
 </script>

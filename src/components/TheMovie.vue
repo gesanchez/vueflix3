@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="the-movie">
     <div
       class="the-movie__banner"
       :style="{ backgroundImage: 'url(' + poster + ')' }"
@@ -8,7 +8,6 @@
   </div>
 </template>
 <script lang="ts">
-import { useMovie } from "../composables/the-movie";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -20,16 +19,17 @@ export default defineComponent({
     posterProp: {
       type: String,
       required: true,
-    }
+    },
   },
   setup(props) {
-    const { title, poster } = useMovie(props);
-
-    return { title, poster };
+    return { title: props.titleProp, poster: props.posterProp };
   },
 });
 </script>
 <style lang="css" scoped>
+.the-movie {
+  cursor: pointer;
+}
 .the-movie__banner {
   height: 200px;
   background-size: cover;

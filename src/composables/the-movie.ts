@@ -1,4 +1,5 @@
 import { Ref, ref } from "vue";
+
 export const useMovie = (
   props: Readonly<{
     titleProp: string;
