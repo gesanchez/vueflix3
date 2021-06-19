@@ -9,4 +9,6 @@ export default {
   totalItems: 0,
   query: "",
   movie: {} as Movie,
+  loading: false,
+  error: null,
 } as StateType;

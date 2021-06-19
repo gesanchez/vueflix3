@@ -50,4 +50,12 @@ export default {
   SET_MOVIE(state: StateType, object: Movie): void {
     state.movie = object;
   },
+  SET_LOADING(state: StateType, loading: boolean): void {
+    state.loading = loading;
+    state.error = null;
+  },
+  SET_ERROR(state: StateType, error: unknown): void {
+    state.error = error;
+    state.loading = false;
+  },
 } as MutationTree<StateType> & MutationsType;

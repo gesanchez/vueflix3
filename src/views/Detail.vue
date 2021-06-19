@@ -2,7 +2,7 @@
   <div class="container px-4 mx-auto">
     <div class="grid grid-cols-2 gap-6">
       <div class="col-span-1">
-        <img :src="movie.poster" alt="movie.title" />
+        <img :src="movie.poster" :alt="movie.title" />
       </div>
       <div>
         <p class="text-6xl">{{ movie.title }}</p>
@@ -11,7 +11,7 @@
         <div class="text-center mt-5">
           <button
             type="button"
-            class="bg-green-400 text-white rounded p-2"
+            class="rounded bg-black text-white p-2 w-20"
             @click="back"
           >
             Regresar
@@ -22,16 +22,13 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent } from "vue";
 import { useDetail } from "../composables/useDetail";
 
 export default defineComponent({
-  setup() {
+  async setup() {
     const { movie, getDetail, back } = useDetail();
-    onMounted(() => {
-      getDetail();
-    });
-
+    await getDetail();
     return { movie, back };
   },
 });

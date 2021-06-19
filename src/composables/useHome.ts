@@ -11,12 +11,22 @@ export const useHome = (): {
   searchMovies: (query: string) => Promise<void>;
   showMore: Ref<boolean>;
   searchMore: () => Promise<void>;
+  getMovies: () => Promise<void>;
 } => {
   const store = useStore();
   const error = ref<unknown>(null);
   const search = ref<string>("");
   const router = useRouter();
   let timer: number | null = null;
+
+  /**
+   * getMovies
+   *
+   * @description Metodo para realizar la carga inicial de las pelciulas
+   */
+  function getMovies(): Promise<void> {
+    return store.dispatch("SEARCH_MOVIES", "");
+  }
 
   /**
    * searchMovies
@@ -67,5 +77,6 @@ export const useHome = (): {
     search,
     searchMovies,
     searchMore,
+    getMovies,
   };
 };

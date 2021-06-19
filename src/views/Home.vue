@@ -16,7 +16,7 @@
     <div class="mt-4 mb-4 text-center" v-if="showMore">
       <button
         type="button"
-        class="rounded bg-green-400 text-white text-center w-40 p-1"
+        class="rounded bg-black text-white text-center w-40 p-1"
         @click="searchMore"
       >
         Mostrar m&aacute;s
@@ -46,9 +46,10 @@ export default defineComponent({
       searchMovies,
       showMore,
       searchMore,
+      getMovies,
     } = useHome();
 
-    onMounted(() => searchMovies(""));
+    onMounted(() => getMovies());
 
     watch(search, searchMovies);
 

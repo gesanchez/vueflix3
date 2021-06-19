@@ -12,8 +12,12 @@ export const useDetail = (): {
   const router = useRouter();
   const route = useRoute();
 
-  function getDetail(): Promise<void> {
-    return store.dispatch("SELECT_MOVIE", route.params.id);
+  async function getDetail(): Promise<void> {
+    try {
+      await store.dispatch("SELECT_MOVIE", route.params.id);
+    } catch (e) {
+      router.push("/404");
+    }
   }
 
   function back(): void {

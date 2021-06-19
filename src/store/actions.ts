@@ -16,26 +16,32 @@ export default {
     q: string
   ): Promise<void> {
     const { client } = useAlgolia("movies");
-    const {
-      hits,
-      nbHits,
-      page,
-      hitsPerPage,
-      query,
-    }: {
-      hits: Array<Movie>;
-      nbHits: number;
-      page: number;
-      hitsPerPage: number;
-      query: string;
-    } = await client.search(q);
-    context.commit("SET_MOVIES", {
-      movies: hits,
-      nbHits,
-      page,
-      hitsPerPage,
-      query,
-    });
+    try {
+      context.commit("SET_LOADING", true);
+      const {
+        hits,
+        nbHits,
+        page,
+        hitsPerPage,
+        query,
+      }: {
+        hits: Array<Movie>;
+        nbHits: number;
+        page: number;
+        hitsPerPage: number;
+        query: string;
+      } = await client.search(q);
+      context.commit("SET_MOVIES", {
+        movies: hits,
+        nbHits,
+        page,
+        hitsPerPage,
+        query,
+      });
+      context.commit("SET_LOADING", false);
+    } catch (e) {
+      context.commit("SET_ERROR", e);
+    }
   },
   /**
    * SEARCH_MORE
@@ -47,42 +53,62 @@ export default {
   async SEARCH_MORE(
     context: ActionContext<StateType, StateType>
   ): Promise<void> {
-    const { client } = useAlgolia("movies");
-    const p = context.state.page;
-    const itemsPerPage = context.state.itemPerPage;
-    const q: string | undefined = context.state.query;
-    const {
-      hits,
-      nbHits,
-      page,
-      hitsPerPage,
-      query,
-    }: {
-      hits: Array<Movie>;
-      nbHits: number;
-      page: number;
-      hitsPerPage: number;
-      query: string;
-    } = await client.search(q as string, {
-      hitsPerPage: itemsPerPage,
-      page: p + 1,
-    });
-    context.commit("ADD_MOVIES", {
-      movies: hits,
-      nbHits,
-      page,
-      hitsPerPage,
-      query,
-    });
+    try {
+      const { client } = useAlgolia("movies");
+      const p = context.state.page;
+      const itemsPerPage = context.state.itemPerPage;
+      const q: string | undefined = context.state.query;
+      context.commit("SET_LOADING", true);
+      const {
+        hits,
+        nbHits,
+        page,
+        hitsPerPage,
+        query,
+      }: {
+        hits: Array<Movie>;
+        nbHits: number;
+        page: number;
+        hitsPerPage: number;
+        query: string;
+      } = await client.search(q as string, {
+        hitsPerPage: itemsPerPage,
+        page: p + 1,
+      });
+      context.commit("ADD_MOVIES", {
+        movies: hits,
+        nbHits,
+        page,
+        hitsPerPage,
+        query,
+      });
+      context.commit("SET_LOADING", false);
+    } catch (e) {
+      context.commit("SET_ERROR", e);
+    }
   },
+  /**
+   * SELECT_MOVIE
+   *
+   * @description Accion para buscar una pelicula y setear la data en el storage
+   * @param context - Contexto de Vue
+   * @param idMovie - Id de la pelicula
+   */
   async SELECT_MOVIE(
     context: ActionContext<StateType, StateType>,
     id: string
   ): Promise<void> {
     const { client } = useAlgolia("movies");
-    const { object }: { object: Movie } = await client.findObject(
-      (hit) => hit.id === id
-    );
-    context.commit("SET_MOVIE", object);
+    return new Promise((resolve, reject) => {
+      client
+        .findObject<Movie>((hits) => hits.id === id)
+        .then((result) => {
+          context.commit("SET_MOVIE", result.object);
+          resolve();
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    });
   },
 };
