@@ -3,7 +3,10 @@
     <div class="mt-4 mb-4">
       <TheSearch v-model="search"></TheSearch>
     </div>
-    <p v-if="error">Error de comunicaci&oacute;n</p>
+    <div v-if="error" class="text-center">
+      <p class="text-center text-xl mt-5">Error de comunicaci&oacute;n</p>
+      <img class="inline-block mt-5 w-96" src="/500.svg" alt="500" />
+    </div>
     <div v-else class="grid grid-cols-4 gap-6">
       <div v-for="movie in movies" :key="movie.id" class="shadow mb-4">
         <TheMovie

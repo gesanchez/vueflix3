@@ -24,8 +24,12 @@ export const useHome = (): {
    *
    * @description Metodo para realizar la carga inicial de las pelciulas
    */
-  function getMovies(): Promise<void> {
-    return store.dispatch("SEARCH_MOVIES", "");
+  async function getMovies(): Promise<void> {
+    try {
+      await store.dispatch("SEARCH_MOVIES", "");
+    } catch (e) {
+      error.value = e;
+    }
   }
 
   /**
@@ -55,7 +59,7 @@ export const useHome = (): {
    * previamente hecha
    */
   async function searchMore(): Promise<void> {
-    return await store.dispatch("SEARCH_MORE");
+    await store.dispatch("SEARCH_MORE");
   }
 
   /**

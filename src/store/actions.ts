@@ -16,32 +16,21 @@ export default {
     q: string
   ): Promise<void> {
     const { client } = useAlgolia("movies");
-    try {
-      context.commit("SET_LOADING", true);
-      const {
-        hits,
-        nbHits,
-        page,
-        hitsPerPage,
-        query,
-      }: {
-        hits: Array<Movie>;
-        nbHits: number;
-        page: number;
-        hitsPerPage: number;
-        query: string;
-      } = await client.search(q);
-      context.commit("SET_MOVIES", {
-        movies: hits,
-        nbHits,
-        page,
-        hitsPerPage,
-        query,
-      });
-      context.commit("SET_LOADING", false);
-    } catch (e) {
-      context.commit("SET_ERROR", e);
-    }
+    return new Promise((resolve, reject) => {
+      client
+        .search(q)
+        .then((result) => {
+          context.commit("SET_MOVIES", {
+            movies: result.hits,
+            nbHits: result.nbHits,
+            page: result.page,
+            hitsPerPage: result.hitsPerPage,
+            query: result.query,
+          });
+          resolve();
+        })
+        .catch((e) => reject(e));
+    });
   },
   /**
    * SEARCH_MORE
@@ -58,7 +47,6 @@ export default {
       const p = context.state.page;
       const itemsPerPage = context.state.itemPerPage;
       const q: string | undefined = context.state.query;
-      context.commit("SET_LOADING", true);
       const {
         hits,
         nbHits,
@@ -82,9 +70,8 @@ export default {
         hitsPerPage,
         query,
       });
-      context.commit("SET_LOADING", false);
     } catch (e) {
-      context.commit("SET_ERROR", e);
+      console.log(e);
     }
   },
   /**
@@ -92,7 +79,7 @@ export default {
    *
    * @description Accion para buscar una pelicula y setear la data en el storage
    * @param context - Contexto de Vue
-   * @param idMovie - Id de la pelicula
+   * @param id - Id de la pelicula
    */
   async SELECT_MOVIE(
     context: ActionContext<StateType, StateType>,

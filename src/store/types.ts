@@ -8,8 +8,6 @@ export interface StateType {
   query?: string;
   idSelected?: string;
   movie?: Movie;
-  loading?: boolean;
-  error?: unknown;
 }
 
 export type MutationsType = {
@@ -46,6 +44,4 @@ export type MutationsType = {
     }
   ): void;
   SET_MOVIE(state: StateType, object: Movie): void;
-  SET_LOADING(state: StateType, loading: boolean): void;
-  SET_ERROR(state: StateType, error: unknown): void;
 };
